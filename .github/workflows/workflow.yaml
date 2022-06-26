@@ -11,10 +11,12 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: "1.16.x"
-        working-directory: ./server
       - name: Install dependencies
+        working-directory: ./server
         run: go get .
       - name: Build
+        working-directory: ./server
         run: go build -v ./...
       - name: Test with the Go CLI
+        working-directory: ./server
         run: go test
