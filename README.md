@@ -1,6 +1,6 @@
 # Euchre
 
-Euchre-as-a-Service
+Euchre as a Service
 
 # Rules
 
