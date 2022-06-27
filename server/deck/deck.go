@@ -32,13 +32,17 @@ type Card struct {
 type Deck []Card
 
 func (d Deck) Shuffle() Deck {
+	deck := make(Deck, 0)
+
+	deck = append(deck, d...)
+
 	rand.Seed(time.Now().UnixNano())
 
-	rand.Shuffle(len(d), func(i, j int) {
-		d[i], d[j] = d[j], d[i]
+	rand.Shuffle(len(deck), func(i, j int) {
+		deck[i], deck[j] = deck[j], deck[i]
 	})
 
-	return d
+	return deck
 }
 
 var ranks = [6]string{NINE, TEN, JACK, QUEEN, KING, ACE}

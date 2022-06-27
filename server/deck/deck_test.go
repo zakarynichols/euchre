@@ -1,6 +1,9 @@
 package deck
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 var deck = NewDeck()
 
@@ -59,5 +62,13 @@ func TestNewDeckRank(t *testing.T) {
 		if rank.value != "Nine" && rank.value != "Ten" && rank.value != "Jack" && rank.value != "Queen" && rank.value != "King" && rank.value != "Ace" {
 			t.Fatalf(`NewDeck() dealt %s rank`, rank.value)
 		}
+	}
+}
+
+func TestDeckShuffle(t *testing.T) {
+	want := false
+
+	if reflect.DeepEqual(deck, deck.Shuffle()) != want {
+		t.Fatal("Shuffle() returned a deep equal deck")
 	}
 }
