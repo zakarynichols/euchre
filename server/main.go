@@ -1,12 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"euchre/deck"
+	"log"
+)
 
 func main() {
-	sum := add(10, 20)
-	fmt.Print(sum)
-}
+	d := deck.NewDeck()
+	log.Print(d.Shuffle())
 
-func add(n1 int, n2 int) int {
-	return n1 + n2
+	for i, v := range d.Shuffle() {
+		log.Print(i)
+		log.Print(v)
+	}
 }
