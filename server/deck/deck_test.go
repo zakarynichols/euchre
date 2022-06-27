@@ -7,7 +7,7 @@ import (
 
 var deck = NewDeck()
 
-func TestNewDeckTotalCards(t *testing.T) {
+func TestDeckCards(t *testing.T) {
 	want := 24
 
 	if len(deck) != want {
@@ -15,52 +15,35 @@ func TestNewDeckTotalCards(t *testing.T) {
 	}
 }
 
-func TestNewDeckSuit(t *testing.T) {
-	want := 6
+func TestDeckContents(t *testing.T) {
+	wantSuits := 4
 
-	type Suit struct {
-		value   string
-		howMany int
-	}
+	wantRanks := 6
 
-	s := make(map[string]Suit)
+	cards := make(map[int]Card)
+
+	var totalSuits int
+	var totalRanks int
 
 	for n := 0; n < len(suits); n++ {
+		totalSuits++
 		for i := 0; i < len(ranks); i++ {
-			s[suits[n]] = Suit{value: suits[n], howMany: i + 1}
+			cards[n] = Card{Suit: suits[n], Rank: ranks[n]}
+			totalRanks++
 		}
 	}
 
-	for _, suit := range s {
-		if suit.howMany != want {
-			t.Fatalf(`NewDeck() dealt %d of %s`, suit.howMany, suit.value)
+	totalRanks = totalRanks / totalSuits
+
+	for _, r := range cards {
+		if totalSuits != wantSuits {
+			t.Fatalf(`NewDeck() dealt %d of %s`, totalSuits, r.Suit)
 		}
-	}
-}
-
-func TestNewDeckRank(t *testing.T) {
-	want := 4
-
-	type Rank struct {
-		value   string
-		howMany int
-	}
-
-	r := make(map[string]Rank)
-
-	for i := 0; i < len(ranks); i++ {
-		for n := 0; n < len(suits); n++ {
-			r[ranks[i]] = Rank{value: ranks[i], howMany: n + 1}
+		if r.Rank != NINE && r.Rank != TEN && r.Rank != JACK && r.Rank != QUEEN && r.Rank != KING && r.Rank != ACE {
+			t.Fatalf(`NewDeck() dealt %s rank`, r.Rank)
 		}
-	}
-
-	for _, rank := range r {
-		if rank.howMany != want {
-			t.Fatalf(`NewDeck() dealt %d of %s`, rank.howMany, rank.value)
-		}
-
-		if rank.value != NINE && rank.value != TEN && rank.value != JACK && rank.value != QUEEN && rank.value != KING && rank.value != ACE {
-			t.Fatalf(`NewDeck() dealt %s rank`, rank.value)
+		if totalRanks != wantRanks {
+			t.Fatalf(`NewDeck() dealt %d of %s`, totalRanks, r.Rank)
 		}
 	}
 }
