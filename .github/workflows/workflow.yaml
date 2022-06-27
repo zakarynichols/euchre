@@ -28,3 +28,6 @@ jobs:
       - name: Test
         working-directory: ./server
         run: go test -v ./...
+
+      - name: Codecov
+        uses: codecov/codecov-action@v3.1.0
