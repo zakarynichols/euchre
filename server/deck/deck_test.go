@@ -59,7 +59,7 @@ func TestNewDeckRank(t *testing.T) {
 			t.Fatalf(`NewDeck() dealt %d of %s`, rank.howMany, rank.value)
 		}
 
-		if rank.value != "Nine" && rank.value != "Ten" && rank.value != "Jack" && rank.value != "Queen" && rank.value != "King" && rank.value != "Ace" {
+		if rank.value != NINE && rank.value != TEN && rank.value != JACK && rank.value != QUEEN && rank.value != KING && rank.value != ACE {
 			t.Fatalf(`NewDeck() dealt %s rank`, rank.value)
 		}
 	}
