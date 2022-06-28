@@ -1,6 +1,7 @@
 package deck
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -24,16 +25,31 @@ const (
 	Diamond = "Diamond"
 	Club    = "Club"
 	Spade   = "Spade"
+
+	// Players
+	PlayerOne   Player = "PlayerOne"
+	PlayerTwo   Player = "PlayerTwo"
+	PlayerThree Player = "PlayerThree"
+	PlayerFour  Player = "PlayerFour"
+
+	// Cards leftover after deal are called the 'kitty'
+	Kitty = "Kitty"
 )
 
 // Model of a playing card
 type Card struct {
-	Rank string
-	Suit string
+	rank string
+	suit string
 }
 
 // Slice of cards
 type Deck []Card
+
+// Type for all player strings.
+// Prefer this type instead of naked strings.
+// This doesn't prevent a consumer from passing
+// a regular string. Just a helper when developing.
+type Player string
 
 // Ranks as a fixed array
 var ranks = [6]string{Nine, Ten, Jack, Queen, King, Ace}
@@ -49,8 +65,8 @@ func New() Deck {
 	for i := 0; i < len(ranks); i++ {
 		for n := 0; n < len(suits); n++ {
 			card := Card{
-				Rank: ranks[i],
-				Suit: suits[n],
+				rank: ranks[i],
+				suit: suits[n],
 			}
 			deck = append(deck, card)
 		}
@@ -70,10 +86,21 @@ func (deck Deck) Shuffle() Deck {
 	return deck
 }
 
-type Deal struct {
-	P1, P2, P3, P4, Kitty []Card
-}
+type Deal map[Player][]Card
 
 func (d Deck) Deal() Deal {
-	return Deal{P1: d[0:5], P2: d[5:10], P3: d[10:15], P4: d[15:20], Kitty: d[20:24]}
+	// Slice expressions allow concise card dealing
+	return Deal{PlayerOne: d[0:5], PlayerTwo: d[5:10], PlayerThree: d[10:15], PlayerFour: d[15:20], Kitty: d[20:24]}
+}
+
+func (d Deal) Hand(key Player) ([]Card, error) {
+	if key != PlayerOne && key != PlayerTwo && key != PlayerThree && key != PlayerFour {
+		return nil, fmt.Errorf(`invalid player key: %s`, key)
+	}
+
+	return d[key], nil
+}
+
+func (d Deal) Kitty() []Card {
+	return d[Kitty]
 }
