@@ -5,6 +5,8 @@ import (
 )
 
 func main() {
-	deck := deck.NewDeck()
+	deck := deck.New()
 	deck.Shuffle()
+	deck.Deal()
+
 }

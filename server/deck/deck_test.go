@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-var deck = NewDeck()
+func TestDeckTotalCards(t *testing.T) {
+	deck := New()
 
-func TestDeckCards(t *testing.T) {
 	want := 24
 
 	if len(deck) != want {
@@ -23,35 +23,62 @@ func TestDeckContents(t *testing.T) {
 	cards := make(map[int]Card)
 
 	var totalSuits int
+	var totalCards int
 	var totalRanks int
 
 	for n := 0; n < len(suits); n++ {
 		totalSuits++
 		for i := 0; i < len(ranks); i++ {
 			cards[n] = Card{Suit: suits[n], Rank: ranks[n]}
-			totalRanks++
+			totalCards++
 		}
 	}
 
-	totalRanks = totalRanks / totalSuits
+	totalRanks = totalCards / totalSuits
 
-	for _, r := range cards {
-		if totalSuits != wantSuits {
-			t.Fatalf(`NewDeck() dealt %d of %s`, totalSuits, r.Suit)
+	for _, c := range cards {
+		if c.Suit != Heart && c.Suit != Diamond && c.Suit != Spade && c.Suit != Club {
+			t.Fatalf(`NewDeck() dealt a malformed suit type: %s`, c.Suit)
 		}
-		if r.Rank != NINE && r.Rank != TEN && r.Rank != JACK && r.Rank != QUEEN && r.Rank != KING && r.Rank != ACE {
-			t.Fatalf(`NewDeck() dealt %s rank`, r.Rank)
+		if totalSuits != wantSuits {
+			t.Fatalf(`NewDeck() dealt %d of %s`, totalSuits, c.Suit)
+		}
+		if c.Rank != Nine && c.Rank != Ten && c.Rank != Jack && c.Rank != Queen && c.Rank != King && c.Rank != Ace {
+			t.Fatalf(`NewDeck() dealt a malformed rank type: %s`, c.Rank)
 		}
 		if totalRanks != wantRanks {
-			t.Fatalf(`NewDeck() dealt %d of %s`, totalRanks, r.Rank)
+			t.Fatalf(`NewDeck() dealt %d of %s`, totalRanks, c.Rank)
 		}
 	}
 }
 
 func TestDeckShuffle(t *testing.T) {
-	want := false
+	deck := New()
 
-	if reflect.DeepEqual(deck, deck.Shuffle()) != want {
-		t.Fatal("Shuffle() returned a deep equal deck")
+	newDeck := New()
+
+	if reflect.DeepEqual(deck, newDeck) != true {
+		t.Fatal("New decks are not equal")
+	}
+
+	if reflect.DeepEqual(deck.Shuffle(), newDeck) != false {
+		t.Fatal("New deck failed to shuffle")
+	}
+}
+
+func TestDeckDeal(t *testing.T) {
+	wantCards := 5
+	wantKitty := 4
+
+	deck := New()
+
+	deal := deck.Deal()
+
+	if len(deal.P1) != wantCards || len(deal.P2) != wantCards || len(deal.P3) != wantCards || len(deal.P4) != wantCards {
+		t.Fatal("Deal() dealt incorrect number of cards")
+	}
+
+	if len(deal.Kitty) != wantKitty {
+		t.Fatal("Deal() dealt incorrect number of cards in 'kitty'")
 	}
 }

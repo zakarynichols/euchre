@@ -5,52 +5,45 @@ import (
 	"time"
 )
 
-// These will not be implemented in the original service.
-const SEVEN = "Seven"
-const EIGHT = "Eight"
+// Playing card ranks and suits
+const (
+	// Possibly implemented in future versions
+	Seven = "Seven"
+	Eight = "Eight"
 
-// Ranks to play euchre.
-const NINE = "Nine"
-const TEN = "Ten"
-const JACK = "Jack"
-const QUEEN = "Queen"
-const KING = "King"
-const ACE = "Ace"
+	// Ranks
+	Nine  = "Nine"
+	Ten   = "Ten"
+	Jack  = "Jack"
+	Queen = "Queen"
+	King  = "King"
+	Ace   = "Ace"
 
-// Suits
-const HEART = "Heart"
-const DIAMOND = "Diamond"
-const CLUB = "Club"
-const SPADE = "Spade"
+	// Suits
+	Heart   = "Heart"
+	Diamond = "Diamond"
+	Club    = "Club"
+	Spade   = "Spade"
+)
 
-// Model of a playing card.
+// Model of a playing card
 type Card struct {
 	Rank string
 	Suit string
 }
 
+// Slice of cards
 type Deck []Card
 
-func (d Deck) Shuffle() Deck {
-	deck := make(Deck, 0)
+// Ranks as a fixed array
+var ranks = [6]string{Nine, Ten, Jack, Queen, King, Ace}
 
-	deck = append(deck, d...)
+// Suits as a fixed array
+var suits = [4]string{Heart, Diamond, Club, Spade}
 
-	rand.Seed(time.Now().UnixNano())
-
-	rand.Shuffle(len(deck), func(i, j int) {
-		deck[i], deck[j] = deck[j], deck[i]
-	})
-
-	return deck
-}
-
-var ranks = [6]string{NINE, TEN, JACK, QUEEN, KING, ACE}
-var suits = [4]string{HEART, DIAMOND, CLUB, SPADE}
-
-// NewDeck returns a new deck of cards.
+// New returns a new deck of cards.
 // Ranks and suits are set internally.
-func NewDeck() Deck {
+func New() Deck {
 	deck := make(Deck, 0)
 
 	for i := 0; i < len(ranks); i++ {
@@ -64,4 +57,23 @@ func NewDeck() Deck {
 	}
 
 	return deck
+}
+
+// Shuffle the deck.
+func (deck Deck) Shuffle() Deck {
+	rand.Seed(time.Now().UnixNano())
+
+	rand.Shuffle(len(deck), func(i, j int) {
+		deck[i], deck[j] = deck[j], deck[i]
+	})
+
+	return deck
+}
+
+type Deal struct {
+	P1, P2, P3, P4, Kitty []Card
+}
+
+func (d Deck) Deal() Deal {
+	return Deal{P1: d[0:5], P2: d[5:10], P3: d[10:15], P4: d[15:20], Kitty: d[20:24]}
 }
