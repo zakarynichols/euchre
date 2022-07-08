@@ -34,20 +34,12 @@ const (
 
 // Model of a playing card
 type Card struct {
-	rank Rank
-	suit Suit
+	Rank Rank
+	Suit Suit
 }
 
 func NewCard(rank Rank, suit Suit) Card {
 	return Card{rank, suit}
-}
-
-func (c Card) Rank() Rank {
-	return c.rank
-}
-
-func (c Card) Suit() Suit {
-	return c.suit
 }
 
 // Slice of cards
@@ -67,8 +59,8 @@ func New() Deck {
 	for i := 0; i < len(ranks); i++ {
 		for n := 0; n < len(suits); n++ {
 			card := Card{
-				rank: ranks[i],
-				suit: suits[n],
+				Rank: ranks[i],
+				Suit: suits[n],
 			}
 			deck = append(deck, card)
 		}

@@ -29,7 +29,7 @@ func TestDeckContents(t *testing.T) {
 	for n := 0; n < len(suits); n++ {
 		totalSuits++
 		for i := 0; i < len(ranks); i++ {
-			cards[n] = Card{suit: suits[n], rank: ranks[n]}
+			cards[n] = Card{Suit: suits[n], Rank: ranks[n]}
 			totalCards++
 		}
 	}
@@ -37,17 +37,17 @@ func TestDeckContents(t *testing.T) {
 	totalRanks = totalCards / totalSuits
 
 	for _, c := range cards {
-		if c.suit != Heart && c.suit != Diamond && c.suit != Spade && c.suit != Club {
-			t.Fatalf(`NewDeck() dealt a malformed suit type: %s`, c.suit)
+		if c.Suit != Heart && c.Suit != Diamond && c.Suit != Spade && c.Suit != Club {
+			t.Fatalf(`NewDeck() dealt a malformed suit type: %s`, c.Suit)
 		}
 		if totalSuits != wantSuits {
-			t.Fatalf(`NewDeck() dealt %d of %s`, totalSuits, c.suit)
+			t.Fatalf(`NewDeck() dealt %d of %s`, totalSuits, c.Suit)
 		}
-		if c.rank != Nine && c.rank != Ten && c.rank != Jack && c.rank != Queen && c.rank != King && c.rank != Ace {
-			t.Fatalf(`NewDeck() dealt a malformed rank type: %d`, c.rank)
+		if c.Rank != Nine && c.Rank != Ten && c.Rank != Jack && c.Rank != Queen && c.Rank != King && c.Rank != Ace {
+			t.Fatalf(`NewDeck() dealt a malformed rank type: %d`, c.Rank)
 		}
 		if totalRanks != wantRanks {
-			t.Fatalf(`NewDeck() dealt %d of %d`, totalRanks, c.rank)
+			t.Fatalf(`NewDeck() dealt %d of %d`, totalRanks, c.Rank)
 		}
 	}
 }

@@ -17,24 +17,10 @@ func main() {
 	// Deal cards into piles.
 	deal := newDeck.Deal()
 
-	// All the cards dealt into hands
-	// ready to be handed to the players.
-	// for i, v := range deal.Hands() {
-	// 	log.Print("Player Index: ", i)
-	// 	log.Print("Player Value: ", v)
-	// 	log.Print("------------------")
-	// }
-
 	// Give the players their cards.
 	p := players.New(deal)
 
-	log.Print(deal.Kitty())
-	log.Print(p.PlayerOne.Hand())
-
 	deal.Pickup(p.PlayerOne, 0)
-
-	log.Print(deal.Kitty())
-	log.Print(p.PlayerOne.Hand())
 
 	// Set the dealer.
 	p.PlayerOne.SetDealer()
@@ -66,8 +52,6 @@ func main() {
 	}
 
 	winner := t.Winner()
-
-	log.Print(p.PlayerTwo.Lead())
 
 	log.Print("Winner: ", winner)
 }
