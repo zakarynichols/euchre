@@ -1,49 +1,73 @@
 package main
 
 import (
-	"euchre/deal"
 	"euchre/deck"
 	"euchre/players"
+	"euchre/trick"
 	"log"
 )
 
 func main() {
 	// Get a new deck.
-	d := deck.New()
+	newDeck := deck.New()
 
 	// Shuffle the deck.
-	d.Shuffle()
+	newDeck.Shuffle()
 
 	// Deal cards into piles.
-	hands := deal.New(d)
+	deal := newDeck.Deal()
 
 	// All the cards dealt into hands
 	// ready to be handed to the players.
-	for i, v := range hands.Hands() {
-		log.Print("Player Index: ", i)
-		log.Print("Player Value: ", v)
-		log.Print("------------------")
-	}
-
-	// Dealing the cards also returns the kitty.
-	log.Println("Kitty: ", hands.Kitty())
+	// for i, v := range deal.Hands() {
+	// 	log.Print("Player Index: ", i)
+	// 	log.Print("Player Value: ", v)
+	// 	log.Print("------------------")
+	// }
 
 	// Give the players their cards.
-	p := players.New(hands)
+	p := players.New(deal)
+
+	log.Print(deal.Kitty())
+	log.Print(p.PlayerOne.Hand())
+
+	deal.Pickup(p.PlayerOne, 0)
+
+	log.Print(deal.Kitty())
+	log.Print(p.PlayerOne.Hand())
 
 	// Set the dealer.
-	p.SetDealer(players.Four)
+	p.PlayerOne.SetDealer()
 
-	// Show player one p1
-	p1 := p[players.One]
+	// Set lead player of the trick
+	p.PlayerTwo.SetLead()
 
-	// The hand is a map of cards
-	log.Print("Hand before play: ", p1.ShowHand())
+	// An example trick
+	t := trick.Trick{
+		Cards: trick.Play{
+			0: {
+				Card:   p.PlayerOne.Hand()[0],
+				Player: *p.PlayerOne,
+			},
+			1: {
+				Card:   p.PlayerTwo.Hand()[0],
+				Player: *p.PlayerTwo,
+			},
+			2: {
+				Card:   p.PlayerThree.Hand()[0],
+				Player: *p.PlayerThree,
+			},
+			3: {
+				Card:   p.PlayerFour.Hand()[0],
+				Player: *p.PlayerFour,
+			},
+		},
+		Trump: deck.Heart,
+	}
 
-	// Play one of player ones cards
-	p[players.One].Play(p1.ShowHand()[0])
+	winner := t.Winner()
 
-	// Play uses `delete` under the hood to remove
-	// a card from a players hand.
-	log.Print("Hand after play: ", p1.ShowHand())
+	log.Print(p.PlayerTwo.Lead())
+
+	log.Print("Winner: ", winner)
 }
