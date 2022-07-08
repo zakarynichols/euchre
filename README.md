@@ -4,7 +4,7 @@
 
 [![codecov](https://codecov.io/gh/zaknicholsdev/euchre/branch/develop/graph/badge.svg?token=M9XADAX4QL)](https://codecov.io/gh/zaknicholsdev/euchre)
 
-![Workflow](https://github.com/zaknicholsdev/euchre/actions/workflows/workflow.yaml/badge.svg?branch=develop)
+![Workflow](https://github.com/zakarynichols/euchre/actions/workflows/workflow.yml/badge.svg?branch=develop)
 
 # Rules
 
