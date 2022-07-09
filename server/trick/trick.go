@@ -1,9 +1,13 @@
 package trick
 
 import (
+	"errors"
 	"euchre/deck"
 	"euchre/players"
-	"log"
+)
+
+var (
+	ErrNoLeadDealer = errors.New("a lead dealer has not been set")
 )
 
 type Trick struct {
@@ -21,7 +25,7 @@ type Winner struct {
 	Player players.PlayerKey
 }
 
-func (t Trick) Winner() Winner {
+func (t Trick) Winner() (Winner, error) {
 	// Don't determine a winner unless a leader has been set.
 	// Will be moved into its own function.
 	var isLeadSet bool
@@ -31,7 +35,7 @@ func (t Trick) Winner() Winner {
 		}
 	}
 	if !isLeadSet {
-		log.Fatal("A lead dealer has not been set.")
+		return Winner{}, errors.New("a lead dealer has not been set")
 	}
 
 	var winner Winner
@@ -61,7 +65,9 @@ func (t Trick) Winner() Winner {
 
 	// Determine if there are any trump cards in the trick
 	for _, v := range t.Cards {
-		if v.Card.Suit == t.Trump {
+		if v.Card.Suit == t.Trump ||
+			(v.Card.Suit == leftBowerSuit &&
+				v.Card.Rank == deck.Jack) {
 			hasTrump = true
 		}
 	}
@@ -76,7 +82,6 @@ func (t Trick) Winner() Winner {
 	for _, v := range t.Cards {
 		// If the trick contains trump cards
 		if hasTrump {
-
 			// Right bower
 			if v.Card.Rank == deck.Jack &&
 				v.Card.Suit == t.Trump {
@@ -110,6 +115,9 @@ func (t Trick) Winner() Winner {
 				}
 				// We only want to set 'winner' again if the current card rank is higher.
 				if v.Card.Rank > winner.Card.Rank {
+					if winner.Card.Rank == deck.Jack {
+						break
+					}
 					winner = Winner{
 						v.Card,
 						v.Player.Key(),
@@ -137,5 +145,5 @@ func (t Trick) Winner() Winner {
 		}
 	}
 
-	return winner
+	return winner, nil
 }

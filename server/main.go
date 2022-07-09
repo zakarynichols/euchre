@@ -51,7 +51,11 @@ func main() {
 		Trump: deck.Heart,
 	}
 
-	winner := t.Winner()
+	winner, err := t.Winner()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	log.Print("Winner: ", winner)
 }
