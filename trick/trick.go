@@ -66,6 +66,7 @@ func (t Trick) Winner() (Winner, error) {
 	// Determine if there are any trump cards in the trick
 	for _, v := range t.Cards {
 		if v.Card.Suit == t.Trump ||
+			// The left bower is considered a trump card
 			(v.Card.Suit == leftBowerSuit &&
 				v.Card.Rank == deck.Jack) {
 			hasTrump = true

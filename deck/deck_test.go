@@ -93,20 +93,6 @@ func TestDealHand(t *testing.T) {
 	}
 }
 
-// func TestDealHandError(t *testing.T) {
-// 	d := deck.New()
-
-// 	hands := New(d)
-
-// 	_, err := hands.Hand("garb")
-
-// 	if err != nil {
-// 		if err.Error() != "invalid player key: garb" {
-// 			t.Fatal("Hand('garb') returned invalid error message")
-// 		}
-// 	}
-// }
-
 func TestDealKitty(t *testing.T) {
 	want := 4
 
@@ -118,5 +104,35 @@ func TestDealKitty(t *testing.T) {
 
 	if len(kitty) != want {
 		t.Fatalf(`Kitty() returned %d. want: %d`, len(kitty), want)
+	}
+}
+
+// Mock swap and method to satisfy the Swapper interface
+type Swap struct {
+	Card
+}
+
+func (s *Swap) Swap(c *Card, i int) *Card {
+	card := s.Card
+	return &card
+}
+func TestPickup(t *testing.T) {
+	want := NewCard(Jack, Diamond)
+
+	// Get a new deck.
+	d := New()
+
+	// Deal cards into piles.
+	deal := d.Deal()
+
+	s := Swap{want}
+
+	deal.Pickup(&s, 0)
+
+	got := deal.kitty[0]
+
+	// Kitty should be the jack of diamonds after pickup
+	if got != want {
+		t.Fatalf(`Pickup() got %v. want %v`, got, want)
 	}
 }
