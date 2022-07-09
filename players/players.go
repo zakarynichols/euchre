@@ -51,10 +51,11 @@ type PlayerKey string
 
 const (
 	// Players
-	One   PlayerKey = "PlayerOne"
-	Two   PlayerKey = "PlayerTwo"
-	Three PlayerKey = "PlayerThree"
-	Four  PlayerKey = "PlayerFour"
+	EmptyPlayer PlayerKey = "EmptyPlayer"
+	One         PlayerKey = "PlayerOne"
+	Two         PlayerKey = "PlayerTwo"
+	Three       PlayerKey = "PlayerThree"
+	Four        PlayerKey = "PlayerFour"
 )
 
 type Placing int

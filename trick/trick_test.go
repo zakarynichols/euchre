@@ -192,7 +192,7 @@ func TestLeadPlayerTrumpGetsBeat(t *testing.T) {
 	}
 }
 
-func TestFailIfNoLeadSet(t *testing.T) {
+func TestErrNoLeaderDealer(t *testing.T) {
 	d := deck.New()
 
 	p := players.New(d.Deal())
@@ -221,7 +221,7 @@ func TestFailIfNoLeadSet(t *testing.T) {
 
 	_, err := tr.Winner()
 
-	if err == ErrNoLeadDealer {
-		t.Fatal(ErrNoLeadDealer)
+	if err != ErrNoLeadDealer {
+		t.Fatalf("got error: %v. want error: %v", err, ErrNoLeadDealer)
 	}
 }

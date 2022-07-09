@@ -8,6 +8,11 @@ import (
 
 var (
 	ErrNoLeadDealer = errors.New("a lead dealer has not been set")
+	ErrNoWinner     = errors.New("could dot determine a winner")
+)
+
+var (
+	EmptyCard = deck.NewCard(deck.EmptyRank, deck.EmptySuit)
 )
 
 type Trick struct {
@@ -25,31 +30,22 @@ type Winner struct {
 	Player players.PlayerKey
 }
 
-func (t Trick) Winner() (Winner, error) {
-	// Don't determine a winner unless a leader has been set.
-	// Will be moved into its own function.
-	var isLeadSet bool
+func (t Trick) isLeadSet() error {
+	isLeadSet := false
 	for _, v := range t.Cards {
 		if v.Player.Lead() {
 			isLeadSet = true
 		}
 	}
 	if !isLeadSet {
-		return Winner{}, errors.New("a lead dealer has not been set")
+		return ErrNoLeadDealer
 	}
+	return nil
+}
 
-	var winner Winner
-
-	// The new trump suit determined by the lead player of the trick.
-	// Only gets set if there are no trump cards in the trick.
-	var newTrump deck.Suit
-
+func (t Trick) leftBowerSuit() deck.Suit {
 	var leftBowerSuit deck.Suit
 
-	// If there are any trump cards in play this gets set to true
-	var hasTrump bool
-
-	// Is there a pattern that expresses this logic better?
 	if t.Trump == deck.Club {
 		leftBowerSuit = deck.Spade
 	}
@@ -63,6 +59,27 @@ func (t Trick) Winner() (Winner, error) {
 		leftBowerSuit = deck.Diamond
 	}
 
+	return leftBowerSuit
+}
+
+// The new trump suit determined by the lead player of the trick.
+// Only gets set if there are no trump cards in the trick.
+func (t Trick) newTrump(hasTrump bool) deck.Suit {
+	var newTrump deck.Suit
+	// If there aren't any trump cards; the new trump is set to the lead players suit
+	for _, v := range t.Cards {
+		if v.Player.Lead() && !hasTrump {
+			newTrump = v.Card.Suit
+		}
+	}
+
+	return newTrump
+}
+
+func (t Trick) hasTrump(leftBowerSuit deck.Suit) bool {
+	// If there are any trump cards in play this gets set to true
+	hasTrump := false
+
 	// Determine if there are any trump cards in the trick
 	for _, v := range t.Cards {
 		if v.Card.Suit == t.Trump ||
@@ -73,19 +90,36 @@ func (t Trick) Winner() (Winner, error) {
 		}
 	}
 
-	// If there aren't any trump cards; the new trump is set to the lead players suit
-	for _, v := range t.Cards {
-		if v.Player.Lead() && !hasTrump {
-			newTrump = v.Card.Suit
-		}
+	return hasTrump
+}
+
+func (trick Trick) Winner() (Winner, error) {
+	err := trick.isLeadSet()
+
+	if err != nil {
+		return Winner{
+			Card:   EmptyCard,
+			Player: players.EmptyPlayer,
+		}, err
 	}
 
-	for _, v := range t.Cards {
+	leftBowerSuit := trick.leftBowerSuit()
+
+	hasTrump := trick.hasTrump(leftBowerSuit)
+
+	newTrump := trick.newTrump(hasTrump)
+
+	winner := Winner{
+		Card:   EmptyCard,
+		Player: players.EmptyPlayer,
+	}
+
+	for _, v := range trick.Cards {
 		// If the trick contains trump cards
 		if hasTrump {
 			// Right bower
 			if v.Card.Rank == deck.Jack &&
-				v.Card.Suit == t.Trump {
+				v.Card.Suit == trick.Trump {
 				winner = Winner{
 					v.Card,
 					v.Player.Key(),
@@ -96,7 +130,7 @@ func (t Trick) Winner() (Winner, error) {
 			}
 
 			// Left bower
-			if v.Card.Suit != t.Trump &&
+			if v.Card.Suit != trick.Trump &&
 				v.Card.Suit == leftBowerSuit &&
 				v.Card.Rank == deck.Jack {
 				winner = Winner{
@@ -106,9 +140,9 @@ func (t Trick) Winner() (Winner, error) {
 			}
 
 			// Highest trump card
-			if v.Card.Suit == t.Trump {
+			if v.Card.Suit == trick.Trump {
 				// If we find a trump card; set it only if the winner is still a zero-value.
-				if winner.Card == *new(deck.Card) {
+				if winner.Card == EmptyCard {
 					winner = Winner{
 						v.Card,
 						v.Player.Key(),
@@ -117,6 +151,7 @@ func (t Trick) Winner() (Winner, error) {
 				// We only want to set 'winner' again if the current card rank is higher.
 				if v.Card.Rank > winner.Card.Rank {
 					if winner.Card.Rank == deck.Jack {
+						// Break if the winnning card is a jack.
 						break
 					}
 					winner = Winner{
@@ -129,7 +164,7 @@ func (t Trick) Winner() (Winner, error) {
 		} else {
 			if v.Card.Suit == newTrump {
 				// If we find a trump card; set it only if the winner is still a zero-value.
-				if winner.Card == *new(deck.Card) {
+				if winner.Card == EmptyCard {
 					winner = Winner{
 						v.Card,
 						v.Player.Key(),
@@ -144,6 +179,10 @@ func (t Trick) Winner() (Winner, error) {
 				}
 			}
 		}
+	}
+
+	if winner.Card == EmptyCard || winner.Player == players.EmptyPlayer {
+		return Winner{EmptyCard, players.EmptyPlayer}, ErrNoWinner
 	}
 
 	return winner, nil

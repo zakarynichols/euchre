@@ -15,18 +15,20 @@ const (
 	Eight = "Eight"
 
 	// Ranks
-	Nine  Rank = 0
-	Ten   Rank = 1
-	Jack  Rank = 2
-	Queen Rank = 3
-	King  Rank = 4
-	Ace   Rank = 5
+	EmptyRank Rank = 0
+	Nine      Rank = 1
+	Ten       Rank = 2
+	Jack      Rank = 3
+	Queen     Rank = 4
+	King      Rank = 5
+	Ace       Rank = 6
 
 	// Suits
-	Heart   Suit = "Heart"
-	Diamond Suit = "Diamond"
-	Club    Suit = "Club"
-	Spade   Suit = "Spade"
+	EmptySuit Suit = "Unknown"
+	Heart     Suit = "Heart"
+	Diamond   Suit = "Diamond"
+	Club      Suit = "Club"
+	Spade     Suit = "Spade"
 
 	// Cards leftover after deal are called the 'kitty'
 	Kitty = "Kitty"
