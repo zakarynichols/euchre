@@ -2,35 +2,37 @@ package players
 
 import (
 	"euchre/deck"
-	"fmt"
 )
 
 type Hand map[int]deck.Card
 
 type Player struct {
-	key      PlayerKey
-	isDealer bool
-	placing  Placing
+	Key      PlayerKey
+	IsDealer bool
+	Placing  Placing
 	hand     Hand
-	isLead   bool
+	Team     Team
 }
+
+type Team string
+
+const (
+	EmptyTeam Team = "Empty"
+	RedTeam   Team = "Red"
+	BlackTeam Team = "Black"
+)
 
 // Notice the pointer to a player. There are a couple methods that
 // need to modify the receiver. In this case, the Player struct is
 // the receiver. (p *Player) for example.
-type Players struct {
-	PlayerOne   *Player
-	PlayerTwo   *Player
-	PlayerThree *Player
-	PlayerFour  *Player
-}
+type Players map[PlayerKey]*Player
 
 func (p *Player) SetDealer() {
-	p.isDealer = true
+	p.IsDealer = true
 }
 
-func (p *Player) SetLead() {
-	p.isLead = true
+func (p *Player) SetTeam(t Team) {
+	p.Team = t
 }
 
 func (p *Player) Swap(c *deck.Card, index int) *deck.Card {
@@ -39,23 +41,19 @@ func (p *Player) Swap(c *deck.Card, index int) *deck.Card {
 	return &discard
 }
 
-func (p Player) Lead() bool {
-	return p.isLead
-}
-
 // Type for all player strings.
 // Prefer this type instead of naked strings.
 // This doesn't prevent a consumer from passing
 // a regular string. Just a helper when developing.
-type PlayerKey string
+type PlayerKey int
 
 const (
 	// Players
-	EmptyPlayer PlayerKey = "EmptyPlayer"
-	One         PlayerKey = "PlayerOne"
-	Two         PlayerKey = "PlayerTwo"
-	Three       PlayerKey = "PlayerThree"
-	Four        PlayerKey = "PlayerFour"
+	EmptyPlayer PlayerKey = 0
+	One         PlayerKey = 1
+	Two         PlayerKey = 2
+	Three       PlayerKey = 3
+	Four        PlayerKey = 4
 )
 
 type Placing int
@@ -70,14 +68,13 @@ const (
 
 func newPlayer(k PlayerKey, isDealer bool, p Placing, h Hand) *Player {
 	return &Player{
-		key:      k,
-		isDealer: isDealer,
-		placing:  p,
+		Key:      k,
+		IsDealer: isDealer,
+		Placing:  p,
 		hand:     h,
 	}
 }
 
-// Dealer 'hands' the cards to a player.
 type Dealer interface {
 	Hand(key int) []deck.Card
 }
@@ -98,10 +95,10 @@ func sliceToMap(d Dealer, index int) Hand {
 
 func New(d Dealer) Players {
 	return Players{
-		PlayerOne:   newPlayer(One, false, None, sliceToMap(d, 0)),
-		PlayerTwo:   newPlayer(Two, false, None, sliceToMap(d, 1)),
-		PlayerThree: newPlayer(Three, false, None, sliceToMap(d, 2)),
-		PlayerFour:  newPlayer(Four, false, None, sliceToMap(d, 3)),
+		One:   newPlayer(One, false, None, sliceToMap(d, 0)),
+		Two:   newPlayer(Two, false, None, sliceToMap(d, 1)),
+		Three: newPlayer(Three, false, None, sliceToMap(d, 2)),
+		Four:  newPlayer(Four, false, None, sliceToMap(d, 3)),
 	}
 }
 
@@ -109,28 +106,6 @@ func (p Player) Hand() Hand {
 	return p.hand
 }
 
-func (p Player) Play(c deck.Card) error {
-	found := false
-
-	for i, v := range p.hand {
-		if c == v {
-			found = true
-			delete(p.hand, i)
-			return nil
-		}
-	}
-
-	if !found {
-		return fmt.Errorf("Player %s does not have card %v", p.key, c)
-	}
-
-	return nil
-}
-
 func (h Hand) Len() int {
 	return len(h)
-}
-
-func (p Player) Key() PlayerKey {
-	return p.key
 }

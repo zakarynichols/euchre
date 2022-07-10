@@ -11,29 +11,29 @@ func TestRightBowerWins(t *testing.T) {
 
 	p := players.New(d.Deal())
 
-	p.PlayerFour.SetLead()
-
 	tr := Trick{
 		Cards: Play{
 			0: {
 				Card:   deck.NewCard(deck.Jack, deck.Spade),
-				Player: *p.PlayerOne,
+				Player: p[players.One],
 			},
 			1: {
 				Card:   deck.NewCard(deck.Jack, deck.Club),
-				Player: *p.PlayerTwo,
+				Player: p[players.Two],
 			},
 			2: {
 				Card:   deck.NewCard(deck.Nine, deck.Heart),
-				Player: *p.PlayerThree,
+				Player: p[players.Three],
 			},
 			3: {
 				Card:   deck.NewCard(deck.Ace, deck.Diamond),
-				Player: *p.PlayerFour,
+				Player: p[players.Four],
 			},
 		},
 		Trump: deck.Spade,
 	}
+
+	tr.SetLead(p[players.Four])
 
 	winner, _ := tr.Winner()
 
@@ -49,29 +49,29 @@ func TestLeftBowerWins(t *testing.T) {
 
 	p := players.New(d.Deal())
 
-	p.PlayerFour.SetLead()
-
 	tr := Trick{
 		Cards: Play{
 			0: {
 				Card:   deck.NewCard(deck.King, deck.Spade),
-				Player: *p.PlayerOne,
+				Player: p[players.One],
 			},
 			1: {
 				Card:   want,
-				Player: *p.PlayerTwo,
+				Player: p[players.Two],
 			},
 			2: {
 				Card:   deck.NewCard(deck.Nine, deck.Heart),
-				Player: *p.PlayerThree,
+				Player: p[players.Three],
 			},
 			3: {
 				Card:   deck.NewCard(deck.Ace, deck.Diamond),
-				Player: *p.PlayerFour,
+				Player: p[players.Four],
 			},
 		},
 		Trump: deck.Spade,
 	}
+
+	tr.SetLead(p[players.Four])
 
 	got, _ := tr.Winner()
 
@@ -85,29 +85,29 @@ func TestHighestTrumpNoBowers(t *testing.T) {
 
 	p := players.New(d.Deal())
 
-	p.PlayerFour.SetLead()
-
 	tr := Trick{
 		Cards: Play{
 			0: {
 				Card:   deck.NewCard(deck.Queen, deck.Spade),
-				Player: *p.PlayerOne,
+				Player: p[players.One],
 			},
 			1: {
 				Card:   deck.NewCard(deck.Ace, deck.Spade),
-				Player: *p.PlayerTwo,
+				Player: p[players.Two],
 			},
 			2: {
 				Card:   deck.NewCard(deck.King, deck.Spade),
-				Player: *p.PlayerThree,
+				Player: p[players.Three],
 			},
 			3: {
 				Card:   deck.NewCard(deck.Ace, deck.Diamond),
-				Player: *p.PlayerFour,
+				Player: p[players.Four],
 			},
 		},
 		Trump: deck.Spade,
 	}
+
+	tr.SetLead(p[players.Four])
 
 	winner, _ := tr.Winner()
 
@@ -123,29 +123,29 @@ func TestLeadDealerOffsuitWins(t *testing.T) {
 
 	p := players.New(d.Deal())
 
-	p.PlayerFour.SetLead()
-
 	tr := Trick{
 		Cards: Play{
 			0: {
 				Card:   deck.NewCard(deck.King, deck.Heart),
-				Player: *p.PlayerOne,
+				Player: p[players.One],
 			},
 			1: {
 				Card:   deck.NewCard(deck.Jack, deck.Diamond),
-				Player: *p.PlayerTwo,
+				Player: p[players.Two],
 			},
 			2: {
 				Card:   deck.NewCard(deck.Queen, deck.Diamond),
-				Player: *p.PlayerThree,
+				Player: p[players.Three],
 			},
 			3: {
 				Card:   want,
-				Player: *p.PlayerFour,
+				Player: p[players.Four],
 			},
 		},
 		Trump: deck.Spade,
 	}
+
+	tr.SetLead(p[players.Four])
 
 	got, _ := tr.Winner()
 
@@ -161,29 +161,29 @@ func TestLeadPlayerTrumpGetsBeat(t *testing.T) {
 
 	p := players.New(d.Deal())
 
-	p.PlayerFour.SetLead()
-
 	tr := Trick{
 		Cards: Play{
 			0: {
 				Card:   deck.NewCard(deck.Queen, deck.Spade),
-				Player: *p.PlayerOne,
+				Player: p[players.One],
 			},
 			1: {
 				Card:   want,
-				Player: *p.PlayerTwo,
+				Player: p[players.Two],
 			},
 			2: {
 				Card:   deck.NewCard(deck.Queen, deck.Diamond),
-				Player: *p.PlayerThree,
+				Player: p[players.Three],
 			},
 			3: {
 				Card:   deck.NewCard(deck.King, deck.Spade),
-				Player: *p.PlayerFour,
+				Player: p[players.Four],
 			},
 		},
 		Trump: deck.Spade,
 	}
+
+	tr.SetLead(p[players.Four])
 
 	got, _ := tr.Winner()
 
@@ -201,19 +201,19 @@ func TestErrNoLeaderDealer(t *testing.T) {
 		Cards: Play{
 			0: {
 				Card:   deck.NewCard(deck.Queen, deck.Spade),
-				Player: *p.PlayerOne,
+				Player: p[players.One],
 			},
 			1: {
 				Card:   deck.NewCard(deck.Jack, deck.Club),
-				Player: *p.PlayerTwo,
+				Player: p[players.Two],
 			},
 			2: {
 				Card:   deck.NewCard(deck.Queen, deck.Diamond),
-				Player: *p.PlayerThree,
+				Player: p[players.Three],
 			},
 			3: {
 				Card:   deck.NewCard(deck.King, deck.Spade),
-				Player: *p.PlayerFour,
+				Player: p[players.Four],
 			},
 		},
 		Trump: deck.Spade,

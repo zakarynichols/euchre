@@ -83,36 +83,26 @@ func (deck Deck) Shuffle() Deck {
 }
 
 type Deal struct {
-	hands map[int][]Card
-	kitty []Card
+	Hands map[int][]Card
+	Kitty []Card
 }
 
 // Deal the cards and kitty. The hands are a map of slices. The kitty is a slice.
 func (d Deck) Deal() Deal {
 	return Deal{
-		hands: map[int][]Card{
+		Hands: map[int][]Card{
 			0: d[0:5],
 			1: d[5:10],
 			2: d[10:15],
 			3: d[15:20],
 		},
-		kitty: d[20:24],
+		Kitty: d[20:24],
 	}
-}
-
-// Shows all dealt hands.
-func (d Deal) Hands() map[int][]Card {
-	return d.hands
 }
 
 // Shows a dealt hand by a key.
 func (d Deal) Hand(key int) []Card {
-	return d.hands[key]
-}
-
-// Returns the cards in the kitty.
-func (d Deal) Kitty() []Card {
-	return d.kitty
+	return d.Hands[key]
 }
 
 type Swapper interface {
@@ -121,7 +111,7 @@ type Swapper interface {
 
 // Called when the flipped over card in the kitty is picked up by the dealer.
 func (d Deal) Pickup(s Swapper, index int) {
-	k := d.kitty[0]
+	k := d.Kitty[0]
 	discard := s.Swap(&k, index)
-	d.kitty[0] = *discard
+	d.Kitty[0] = *discard
 }

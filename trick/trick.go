@@ -8,58 +8,55 @@ import (
 
 var (
 	ErrNoLeadDealer = errors.New("a lead dealer has not been set")
-	ErrNoWinner     = errors.New("could dot determine a winner")
+	ErrNoWinner     = errors.New("could not determine a winner")
 )
 
 var (
-	EmptyCard = deck.NewCard(deck.EmptyRank, deck.EmptySuit)
+	EmptyCard   = deck.NewCard(deck.EmptyRank, deck.EmptySuit)
+	EmptyPlayer = players.Player{}
 )
 
 type Trick struct {
 	Cards Play
 	Trump deck.Suit
+	Lead  *players.Player
 }
 
 type Play map[int]struct {
 	Card   deck.Card
-	Player players.Player
+	Player *players.Player
 }
 
 type Winner struct {
 	Card   deck.Card
-	Player players.PlayerKey
+	Player *players.Player
+}
+
+func (t *Trick) SetLead(p *players.Player) {
+	t.Lead = p
 }
 
 func (t Trick) isLeadSet() error {
-	isLeadSet := false
-	for _, v := range t.Cards {
-		if v.Player.Lead() {
-			isLeadSet = true
-		}
-	}
-	if !isLeadSet {
+	if t.Lead == nil {
 		return ErrNoLeadDealer
 	}
 	return nil
 }
 
 func (t Trick) leftBowerSuit() deck.Suit {
-	var leftBowerSuit deck.Suit
-
 	if t.Trump == deck.Club {
-		leftBowerSuit = deck.Spade
+		return deck.Spade
 	}
 	if t.Trump == deck.Spade {
-		leftBowerSuit = deck.Club
+		return deck.Club
 	}
 	if t.Trump == deck.Diamond {
-		leftBowerSuit = deck.Heart
+		return deck.Heart
 	}
 	if t.Trump == deck.Heart {
-		leftBowerSuit = deck.Diamond
+		return deck.Diamond
 	}
-
-	return leftBowerSuit
+	return deck.EmptySuit
 }
 
 // The new trump suit determined by the lead player of the trick.
@@ -68,7 +65,7 @@ func (t Trick) newTrump(hasTrump bool) deck.Suit {
 	var newTrump deck.Suit
 	// If there aren't any trump cards; the new trump is set to the lead players suit
 	for _, v := range t.Cards {
-		if v.Player.Lead() && !hasTrump {
+		if (t.Lead == v.Player) && !hasTrump {
 			newTrump = v.Card.Suit
 		}
 	}
@@ -99,7 +96,7 @@ func (trick Trick) Winner() (Winner, error) {
 	if err != nil {
 		return Winner{
 			Card:   EmptyCard,
-			Player: players.EmptyPlayer,
+			Player: &players.Player{},
 		}, err
 	}
 
@@ -111,7 +108,7 @@ func (trick Trick) Winner() (Winner, error) {
 
 	winner := Winner{
 		Card:   EmptyCard,
-		Player: players.EmptyPlayer,
+		Player: &players.Player{},
 	}
 
 	for _, v := range trick.Cards {
@@ -122,7 +119,7 @@ func (trick Trick) Winner() (Winner, error) {
 				v.Card.Suit == trick.Trump {
 				winner = Winner{
 					v.Card,
-					v.Player.Key(),
+					v.Player,
 				}
 				// The right bower is the highest ranked card in a trick.
 				// Break here since there is no need to iterate further.
@@ -135,7 +132,7 @@ func (trick Trick) Winner() (Winner, error) {
 				v.Card.Rank == deck.Jack {
 				winner = Winner{
 					v.Card,
-					v.Player.Key(),
+					v.Player,
 				}
 			}
 
@@ -145,7 +142,7 @@ func (trick Trick) Winner() (Winner, error) {
 				if winner.Card == EmptyCard {
 					winner = Winner{
 						v.Card,
-						v.Player.Key(),
+						v.Player,
 					}
 				}
 				// We only want to set 'winner' again if the current card rank is higher.
@@ -156,7 +153,7 @@ func (trick Trick) Winner() (Winner, error) {
 					}
 					winner = Winner{
 						v.Card,
-						v.Player.Key(),
+						v.Player,
 					}
 				}
 			}
@@ -167,22 +164,22 @@ func (trick Trick) Winner() (Winner, error) {
 				if winner.Card == EmptyCard {
 					winner = Winner{
 						v.Card,
-						v.Player.Key(),
+						v.Player,
 					}
 				}
 				if v.Card.Rank > winner.Card.Rank {
 					// We only want to set 'winner' again if the current card rank is higher.
 					winner = Winner{
 						v.Card,
-						v.Player.Key(),
+						v.Player,
 					}
 				}
 			}
 		}
 	}
 
-	if winner.Card == EmptyCard || winner.Player == players.EmptyPlayer {
-		return Winner{EmptyCard, players.EmptyPlayer}, ErrNoWinner
+	if winner.Card == EmptyCard || winner.Player.Key == EmptyPlayer.Key {
+		return Winner{EmptyCard, &players.Player{}}, ErrNoWinner
 	}
 
 	return winner, nil
